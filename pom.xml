@@ -54,6 +54,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+			<version>2.1.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -81,6 +86,10 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>
