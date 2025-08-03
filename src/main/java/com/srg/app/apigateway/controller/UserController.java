@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
-    @PostMapping("")
+    @PostMapping("/")
     public ResponseEntity<Object> createUser(@RequestBody User user){
 
         User createdUser = userService.createUser(user);
