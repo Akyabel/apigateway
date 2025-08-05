@@ -59,8 +59,9 @@ public class TaskController {
         Task task = taskRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Task not found"));
 
-        task.setNombre_usuario(taskDetails.getNombre_usuario());
-        task.setCorreo(taskDetails.getCorreo());
+        task.setTitulo(taskDetails.getTitulo());
+        task.setDescripcion(taskDetails.getDescripcion());
+        task.setEstado(taskDetails.getEstado());
 
         Task updatedTask = taskRepository.save(task);
         
