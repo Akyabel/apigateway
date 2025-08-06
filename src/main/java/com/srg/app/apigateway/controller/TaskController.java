@@ -56,7 +56,7 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateTaskById(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
-        Task updatedTask = taskRepository.updatedTask(taskDTO);
+        Task updatedTask = taskRepository.updatedTask(id, taskDTO);
         return ResponseEntity.ok("Task updated succesfully with id: " + updatedTask.getId();
     }
 
