@@ -47,29 +47,21 @@ public class TaskController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createTask(@RequestBody Task task){
+    public ResponseEntity<String> createTask(@RequestBody TaskDTO taskDTO){
 
-        Task createdTask = taskService.createTask(task);
+        Task createdTask = taskService.createTask(taskDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                             .body("Task created with id: " + createdTask.getId());
     } 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateTaskById(@PathVariable Long id, @RequestBody Task taskDetails){
-        Task task = taskRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Task not found"));
-
-        task.setTitulo(taskDetails.getTitulo());
-        task.setDescripcion(taskDetails.getDescripcion());
-        task.setEstado(taskDetails.getEstado());
-
-        Task updatedTask = taskRepository.save(task);
-        
-        return ResponseEntity.ok().body("Task updated succesfully with id: " + updatedTask.getId());
+    public ResponseEntity<Object> updateTaskById(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
+        Task updatedTask = taskRepository.updatedTask(taskDTO);
+        return ResponseEntity.ok("Task updated succesfully with id: " + updatedTask.getId();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteTask(@PathVariable Long id){
+    public ResponseEntity<String> deleteTask(@PathVariable Long id){
        taskRepository.deleteById(id);
        return ResponseEntity.ok().body("Task deleted successfully with id: " + id);
     } 
