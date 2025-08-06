@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.srg.app.apigateway.model.Task;
 import com.srg.app.apigateway.repository.TaskRepository;
 import com.srg.app.apigateway.service.TaskService;
+import com.srg.app.dto.TaskDTO;
 
 @RestController
 @RequestMapping("/tasks")
@@ -32,18 +33,17 @@ public class TaskController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Task>> getAllTasks(){
-        List<Task> tasks = taskRepository.findAll();
+    public ResponseEntity<List<TaskDTO>> getAllTasks(){
+        List<TaskDTO> tasks = taskService.getAllTasks();
         
         return ResponseEntity.ok().body(tasks);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Long id){
-        Task task = taskRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Task not found"));
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id){
+        TaskDTO task = taskService.getTask(id);
         
-        return ResponseEntity.ok().body(task);
+        return ResponseEntity.ok(task);
     }
 
     @PostMapping("/")
