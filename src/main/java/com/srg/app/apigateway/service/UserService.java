@@ -1,16 +1,26 @@
 package com.srg.app.apigateway.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
+import com.srg.app.apigateway.model.Task;
 import com.srg.app.apigateway.model.User;
+import com.srg.app.apigateway.repository.TaskRepository;
 import com.srg.app.apigateway.repository.UserRepository;
+import com.srg.app.dto.TaskDTO;
+import com.srg.app.dto.UserDTO;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TaskRepository taskRepository;
 
-    public UserService(UserRepository userRepository, TaskRepository taskRespository){
+    public UserService(UserRepository userRepository, TaskRepository taskRepository){
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
     }
@@ -22,12 +32,12 @@ public class UserService {
     public UserDTO getUser(Long id){
         User user = userRepository.findById(id)
         .orElseThrow(()-> new RuntimeException("User not found :("));
-        return convertToDTO(user);
+        return convertUserToDTO(user);
     }
 
     public UserDTO createUser(UserDTO dto){
         User user = convertToEntity(dto);
-        User saved = userRepository.save(user)
+        User saved = userRepository.save(user);
         return convertUserToDTO(saved);
     }
 
@@ -36,15 +46,15 @@ public class UserService {
         .orElseThrow(()-> new RuntimeException("User not found :("));
         
         user.setNombre_usuario(dto.getNombre_usuario());
-        user.setCorre(dto.getCorreo());
+        user.setCorreo(dto.getCorreo());
 
-        Set <Task> tasks = dto.getTasks().stream().map(taskDTO -> TaskRepository.findById(taskDTO.getId())
+        Set<Task> tasks = dto.getTasks().stream().map(taskDTO -> taskRepository.findById(taskDTO.getId())
                                                       .orElseThrow(()-> new RuntimeException("Task not found :(")))
                                                       .collect(Collectors.toSet());
-        user.setTask(dto.getTask());
+        user.setTasks(tasks);
 
-        User updated = taskRepository.save(user);
-        return convertToDTO(updated);
+        User updated = userRepository.save(user);
+        return convertUserToDTO(updated);
     }
 
     public void deletUser(Long id){
@@ -56,9 +66,9 @@ public class UserService {
 
 
     public UserDTO convertUserToDTO(User user){
-        Set<TaskDTO> taskDTOs = new HashSet()<>; 
-        for (Task task: user.getTasks(){
-            taskDTOs.add(convertTaskToDTO(task))
+        Set<TaskDTO> taskDTOs = new HashSet<>(); 
+        for (Task task: user.getTasks()){
+            taskDTOs.add(convertTaskToDTO(task));
         }
         UserDTO dto = new UserDTO(user.getId(), user.getNombre_usuario(), user.getCorreo(), taskDTOs);
 
@@ -84,10 +94,10 @@ public class UserService {
         user.setNombre_usuario(dto.getNombre_usuario());
         user.setCorreo(dto.getCorreo());
         
-        Set <Task> tasks = dto.getTasks().stream().map(taskDTO -> TaskRepository.findById(taskDTO.getId())
+        Set <Task> tasks = dto.getTasks().stream().map(taskDTO -> taskRepository.findById(taskDTO.getId())
                                                       .orElseThrow(()-> new RuntimeException("Task not found :(")))
                                                       .collect(Collectors.toSet());
-        task.setTasks(dto.getTasks());
+        user.setTasks(tasks);
 
         return user;
     }
