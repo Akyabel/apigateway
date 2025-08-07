@@ -49,15 +49,15 @@ public class TaskController {
     @PostMapping("/")
     public ResponseEntity<String> createTask(@RequestBody TaskDTO taskDTO){
 
-        Task createdTask = taskService.createTask(taskDTO);
+        TaskDTO createdTask = taskService.createTask(taskDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                             .body("Task created with id: " + createdTask.getId());
     } 
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateTaskById(@PathVariable Long id, @RequestBody TaskDTO taskDTO){
-        Task updatedTask = taskRepository.updatedTask(id, taskDTO);
-        return ResponseEntity.ok("Task updated succesfully with id: " + updatedTask.getId();
+        TaskDTO updatedTask = taskService.updateTask(id, taskDTO);
+        return ResponseEntity.ok("Task updated succesfully with id: " + updatedTask.getId());
     }
 
     @DeleteMapping("/{id}")
