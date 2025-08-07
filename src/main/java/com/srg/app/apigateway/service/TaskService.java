@@ -29,7 +29,7 @@ private final TaskRepository taskRepository;
 
     public TaskDTO createTask(TaskDTO dto){
         Task task = convertToEntity(dto);
-        Task saved = taskRepository.save(task)
+        Task saved = taskRepository.save(task);
         return convertToDTO(saved);
     }
 
