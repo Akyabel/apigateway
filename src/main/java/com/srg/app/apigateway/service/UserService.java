@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.srg.app.apigateway.model.Task;
 import com.srg.app.apigateway.model.User;
@@ -48,10 +49,12 @@ public class UserService {
         user.setNombre_usuario(dto.getNombre_usuario());
         user.setCorreo(dto.getCorreo());
 
-        Set<Task> tasks = dto.getTasks().stream().map(taskDTO -> taskRepository.findById(taskDTO.getId())
+        if (dto.getId() != null) {
+            Set<Task> tasks = dto.getTasks().stream().map(taskDTO -> taskRepository.findById(taskDTO.getId())
                                                       .orElseThrow(()-> new RuntimeException("Task not found :(")))
                                                       .collect(Collectors.toSet());
-        user.setTasks(tasks);
+            user.setTasks(tasks);
+        }
 
         User updated = userRepository.save(user);
         return convertUserToDTO(updated);
@@ -94,12 +97,38 @@ public class UserService {
         user.setNombre_usuario(dto.getNombre_usuario());
         user.setCorreo(dto.getCorreo());
         
+        if (dto.getId() != null) {
         Set <Task> tasks = dto.getTasks().stream().map(taskDTO -> taskRepository.findById(taskDTO.getId())
                                                       .orElseThrow(()-> new RuntimeException("Task not found :(")))
                                                       .collect(Collectors.toSet());
         user.setTasks(tasks);
-
+        }
         return user;
+    }
+
+    @Transactional
+    public UserDTO addTaskToUser(Long userId, Long taskId) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(()-> new RuntimeException("User not found :("));
+        Task task = taskRepository.findById(taskId)
+        .orElseThrow(()-> new RuntimeException("Task not found :("));
+
+        user.getTasks().add(task);
+        userRepository.save(user);
+
+        return convertUserToDTO(user);
+    }
+
+    public UserDTO removeFromToUser(Long userId, Long taskId) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(()-> new RuntimeException("User not found :("));
+        Task task = taskRepository.findById(taskId)
+        .orElseThrow(()-> new RuntimeException("Task not found :("));
+
+        user.getTasks().remove(task);
+        userRepository.save(user);
+
+        return convertUserToDTO(user);
     }
 
 }

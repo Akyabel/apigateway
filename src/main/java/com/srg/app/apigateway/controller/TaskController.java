@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.srg.app.apigateway.model.Task;
 import com.srg.app.apigateway.repository.TaskRepository;
 import com.srg.app.apigateway.service.TaskService;
 import com.srg.app.dto.TaskDTO;

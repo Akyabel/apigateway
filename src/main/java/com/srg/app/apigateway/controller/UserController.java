@@ -2,7 +2,6 @@ package com.srg.app.apigateway.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,16 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.srg.app.apigateway.model.User;
-import com.srg.app.apigateway.repository.UserRepository;
 import com.srg.app.apigateway.service.UserService;
+import com.srg.app.dto.UserDTO;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
-    @Autowired
-    private UserRepository userRepository;
 
     private final UserService userService;
 
@@ -32,44 +27,49 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<User>> getAllUsers(){
-        List<User> users = userRepository.findAll();
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        List<UserDTO> users = userService.getAllUsers();
         
         return ResponseEntity.ok().body(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable Long id){
-        User user = userRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
+        UserDTO user = userService.getUser(id);
         
-        return ResponseEntity.ok().body(user);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createUser(@RequestBody User user){
+    public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO){
 
-        User createdUser = userService.createUser(user);
+        UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                             .body("User created with id: " + createdUser.getId());
     } 
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUserById(@PathVariable Long id, @RequestBody User userDetails){
-        User user = userRepository.findById(id)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-
-        user.setNombre_usuario(userDetails.getNombre_usuario());
-        user.setCorreo(userDetails.getCorreo());
-
-        User updatedUser = userRepository.save(user);
+    public ResponseEntity<UserDTO> updateUserById(@PathVariable Long id, @RequestBody UserDTO userDetails){
+        UserDTO updatedUser = userService.updateUser(id, userDetails);
         
-        return ResponseEntity.ok().body("User updated succesfully with id: " + updatedUser.getId());
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUser(@PathVariable Long id){
-       userRepository.deleteById(id);
-       return ResponseEntity.ok().body("User deleted successfully with id: " + id);
-    } 
+    public ResponseEntity<String> deleteUser(@PathVariable Long id){
+       userService.deletUser(id);
+       return ResponseEntity.ok("User deleted successfully with id: " + id);
+    }
+    
+    @PostMapping("/{userId}/tasks/{taskId}")
+    public ResponseEntity<UserDTO> addTaskToUser(@PathVariable Long userId, @PathVariable Long taskId){
+        UserDTO updatedUser = userService.addTaskToUser(userId, taskId);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{userId}/tasks/{taskId}")
+    public ResponseEntity<String> removeTaskFromUser(@PathVariable Long userId, @PathVariable Long taskId){
+        UserDTO deleteUser = userService.removeFromToUser(userId, taskId);
+        return ResponseEntity.ok("User deleted succesfully");
+    }
 }
