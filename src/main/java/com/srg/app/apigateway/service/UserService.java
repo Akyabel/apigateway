@@ -97,10 +97,19 @@ public class UserService {
         user.setNombre_usuario(dto.getNombre_usuario());
         user.setCorreo(dto.getCorreo());
         
-        if (dto.getId() != null) {
-        Set <Task> tasks = dto.getTasks().stream().map(taskDTO -> taskRepository.findById(taskDTO.getId())
-                                                      .orElseThrow(()-> new RuntimeException("Task not found :(")))
-                                                      .collect(Collectors.toSet());
+        if (dto.getTasks() != null) {
+        Set <Task> tasks = dto.getTasks().stream().map(taskDTO -> {
+                                                    if(taskDTO.getId() != null){ 
+                                                        taskRepository.findById(taskDTO.getId())
+                                                          .orElseThrow(()-> new RuntimeException("Task not found :(")));
+                                                    }else{
+                                                        Task newTask = new Task();
+                                                        newTask.setTitulo(dto.getTitulo());
+                                                        newTask.setDescripcion(dto.getDescripcion());
+                                                        newTask.setEstado(dto.getEstado());
+                                                        return newTask;
+                                                    }
+                                                }).collect(Collectors.toSet());
         user.setTasks(tasks);
         }
         return user;
